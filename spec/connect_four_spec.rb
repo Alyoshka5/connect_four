@@ -34,10 +34,10 @@ describe ConnectFour do
             end
         end
     end
-
+    
     describe "#place_token" do
         subject(:game_place_token) { described_class.new }
-
+        
         context 'when column is full' do
             column = 0
             before do
@@ -60,6 +60,7 @@ describe ConnectFour do
             bottom_row = 5
             
             it 'places token to bottom row' do
+                game_place_token.token = token
                 game_place_token.place_token(column)
                 bottom_space = game_place_token.grid[bottom_row][column]
                 expect(bottom_space).to eql(token)
@@ -83,6 +84,7 @@ describe ConnectFour do
             end
             
             it 'places token on top of highest token in column' do
+                game_place_token.token = token
                 game_place_token.place_token(column)
                 lowest_valid_space = game_place_token.grid[lowest_valid_row][column]
                 expect(lowest_valid_space).to eql(token)
@@ -93,5 +95,87 @@ describe ConnectFour do
                 expect(valid_move).to be true
             end
         end     
+    end
+
+    describe '#game_over?' do
+        subject(:game_over) { described_class.new }
+
+        context 'when there is no winner' do
+            before do
+                for row in (3..5) do
+                    game_over.grid[row][0] = 'X'
+                end
+            end
+
+            it 'returns false' do
+                is_game_over = game_over.game_over?
+                expect(is_game_over).to be false
+            end
+        end
+        
+        context 'when X wins horizontally' do
+            before do
+                for column in (1..4) do
+                    game_over.grid[0][column] = 'X'
+                end
+                allow(game_over).to receive(:puts)
+            end
+
+            it 'returns true' do
+                game_over.token = 'X'
+                is_game_over = game_over.game_over?
+                expect(is_game_over).to be true
+            end
+        end
+        
+        context 'when X wins vertically' do
+            before do
+                for row in (1..4) do
+                    game_over.grid[row][0] = 'X'
+                end
+                allow(game_over).to receive(:puts)
+            end
+
+            it 'returns true' do
+                game_over.token = 'X'
+                is_game_over = game_over.game_over?
+                expect(is_game_over).to be true
+            end
+        end
+        
+        context 'when X wins diagonally' do
+            before do
+                for row in (1..4) do
+                    for column in (1..4) do
+                        game_over.grid[row][column] = 'X' if row == column
+                    end
+                end
+                allow(game_over).to receive(:puts)
+            end
+
+            it 'returns true' do
+                game_over.token = 'X'
+                is_game_over = game_over.game_over?
+                expect(is_game_over).to be true
+            end
+        end
+        
+        context 'when O wins diagonally' do
+            before do
+                for row in (1..4) do
+                    for column in (1..4) do
+                        game_over.grid[row][column] = 'O' if row == column
+                    end
+                end
+                allow(game_over).to receive(:puts)
+            end
+
+            it 'returns true' do
+                game_over.token = 'O'
+                is_game_over = game_over.game_over?
+                expect(is_game_over).to be true
+            end
+        end
+
     end
 end
