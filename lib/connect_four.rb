@@ -1,5 +1,5 @@
 class ConnectFour
-    attr_accessor :grid
+    attr_accessor :grid, :token
     def initialize
         @grid = [[' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' ']]
         @token = 'O'
@@ -48,12 +48,56 @@ class ConnectFour
     end
 
     def game_over?
-        if winner?()
-            puts "#{token} Won!"
-            display_grid()
-            return true
+        for row in (0..5) do
+            for column in (0..6) do
+                if @grid[row][column] == @token && winner?(row, column)
+                    display_grid()
+                    puts "#{token} Won!"
+                    return true
+                end
+            end
         end
         false
     end
-end
 
+    def winner?(row, column, direction = nil)  # tested in game_over? method
+        if direction.nil?
+            paths = get_token_paths(row, column)
+            paths.each do |path|
+                path_row = path[0]
+                path_col = path[1]
+                path_direction = get_path_direction(row, column, path_row, path_col)
+                if @grid[path_row][path_col] == @token && winner?(path_row, path_col, path_direction) >= 2
+                    return true
+                end
+            end
+            return false
+        else
+            child_row = row+direction[0]
+            child_col = column+direction[1]
+            return 0 if child_row > 5 || child_row < 0 || child_col > 6 || child_col < 0
+            if @grid[child_row][child_col] == @token
+                return winner?(child_row, child_col, direction) + 1
+            else
+                return 0
+            end
+        end
+    end
+
+    def get_token_paths(row, column)
+        paths = []
+        directions = [[-1, -1], [0, -1], [0, 1], [-1, 0], [1, 0], [-1, 1], [1, -1], [1, 1]]
+        directions.each do |direction|
+            new_row = row + direction[0]
+            new_col = column + direction[1]
+            if new_row <= 5 && new_row >= 0 && new_col <= 6 && new_col >= 0
+                paths << [new_row, new_col]
+            end
+        end
+        paths
+    end
+
+    def get_path_direction(row, column, path_row, path_col)
+        [path_row - row, path_col - column]
+    end
+end
