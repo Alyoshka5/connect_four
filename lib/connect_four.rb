@@ -1,16 +1,20 @@
 class ConnectFour
+    attr_accessor :grid
     def initialize
         @grid = [[' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' '], [' ', ' ', ' ', ' ', ' ', ' ', ' ']]
-        @turn = 'X'
+        @token = 'X'
     end
 
     def play_game
         game_over = false
         until game_over do
             display_grid()
-            puts "#{@turn}'s turn:"
-            column = get_column()
-            puts column
+            puts "#{@token}'s turn:"
+            loop do
+                column = get_column()
+                break if place_token(column)
+            end
+            display_grid
         end
     end
 
@@ -32,7 +36,16 @@ class ConnectFour
             end
         end
     end
+
+    def place_token(column, row = 0)
+        if @grid[0][column] != ' '
+            puts "Column full, choose another column"
+            return false
+        elsif row == 5 || @grid[row + 1][column] != ' '
+            @grid[row][column] = @token
+            return true
+        end
+        return place_token(column, row + 1)
+    end
 end
 
-game = ConnectFour.new
-game.display_grid
