@@ -178,4 +178,38 @@ describe ConnectFour do
         end
 
     end
+
+    describe '#get_token_paths' do
+        subject(:game_paths) { described_class.new }
+
+        context 'when token is at the center of the grid' do
+            it 'returns all surrounding tokens' do
+                row = 3
+                column = 3
+                paths = [[2, 2], [3, 2], [3, 4], [2, 3], [4, 3], [2, 4], [4, 2], [4, 4]]
+                result_paths = game_paths.get_token_paths(row, column)
+                expect(result_paths).to eql(paths)
+            end
+        end
+
+        context 'when token is at the edge of the grid' do
+            it 'returns surrounding tokens without leaving grid' do
+                row = 0
+                column = 3
+                paths = [[0, 2], [0, 4], [1, 3], [1, 2], [1, 4]]
+                result_paths = game_paths.get_token_paths(row, column)
+                expect(result_paths).to eql(paths)
+            end
+        end
+
+        context 'when token is in the corner of the grid' do
+            it 'returns surrounding tokens without leaving grid' do
+                row = 0
+                column = 0
+                paths = [[0, 1], [1, 0], [1, 1]]
+                result_paths = game_paths.get_token_paths(row, column)
+                expect(result_paths).to eql(paths)
+            end
+        end
+    end
 end
