@@ -34,4 +34,64 @@ describe ConnectFour do
             end
         end
     end
+
+    describe "#place_token" do
+        subject(:game_place_token) { described_class.new }
+
+        context 'when column is full' do
+            column = 0
+            before do
+                token = 'X'
+                # fill column to top
+                for row in (0..5) do
+                    game_place_token.grid[row][column] = 'O'
+                end
+            end
+
+            it 'returns false' do
+                valid_move = game_place_token.place_token(column)
+                expect(valid_move).to be false
+            end
+        end
+        
+        context 'when column is empty' do
+            token = 'X'
+            column = 0
+            bottom_row = 5
+            
+            it 'places token to bottom row' do
+                game_place_token.place_token(column)
+                bottom_space = game_place_token.grid[bottom_row][column]
+                expect(bottom_space).to eql(token)
+            end
+            
+            it 'returns true' do
+                valid_move = game_place_token.place_token(column)
+                expect(valid_move).to be true
+            end
+        end
+        
+        context 'when column is half full' do
+            token = 'X'
+            column = 0
+            lowest_valid_row = 2
+            before do
+                # fill column half way
+                for row in (3..5) do
+                    game_place_token.grid[row][column] = 'O'
+                end
+            end
+            
+            it 'places token on top of highest token in column' do
+                game_place_token.place_token(column)
+                lowest_valid_space = game_place_token.grid[lowest_valid_row][column]
+                expect(lowest_valid_space).to eql(token)
+            end
+            
+            it 'returns true' do
+                valid_move = game_place_token.place_token(column)
+                expect(valid_move).to be true
+            end
+        end     
+    end
 end
